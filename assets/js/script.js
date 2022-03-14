@@ -103,6 +103,18 @@ var getWeatherResults = function (lat, lon, city) {
                     var currentUviEl = document.createElement("p");
                     currentUviEl.classList = "flex-row justify-space-between font-weight-bold";
                     currentUviEl.textContent = "UV Index: " + uvi;
+                    
+                    // apply background colors to uvi value 
+                    if ((parseInt(uvi)) <= 2) {
+                        $(uvi).addClass("bg-green");
+                    }
+                    else if (2 < (parseInt(uvi)) <= 5) {
+                        $(uvi).addClass("bg-yellow");
+                    }
+                    else if (5 < (parseInt(uvi)) <=7) {
+                        $(uvi).addClass("bg-orange");
+                    }
+
                     cityResultsEl.appendChild(currentUviEl);
 
 

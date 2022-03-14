@@ -2,6 +2,18 @@
   border-top: 3px solid black;
 }
 
+.bg-green {
+  background-color: rgb(50, 175, 38);
+}
+
+.bg-yellow {
+  background-color: yellow;
+}
+
+.bg-orange {
+  background-color: rgb(255, 145, 0);
+}
+
 
 
 
