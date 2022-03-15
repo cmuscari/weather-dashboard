@@ -3,6 +3,7 @@ var searchButtonEl = document.querySelector("#search-button");
 var cityInputEl = document.querySelector("#city-name");
 var cityResultsEl = document.querySelector("#city-results");
 var currentDate = (moment().format("M/D/YYYY"));
+var forecastResultsEl = document.getElementsByClassName("card");
 
 
 
@@ -11,6 +12,10 @@ var currentDate = (moment().format("M/D/YYYY"));
 // Form submit handler function to be executed on form submission
 var formSubmitHandler = function (event) {
     event.preventDefault();
+
+    // clear any existing city information from right side of screen
+    cityResultsEl.textContent = "";
+    forecastResultsEl.textContent = "";
 
     // get value from input element
     var cityName = cityInputEl.value.trim();
@@ -61,7 +66,6 @@ var getCityResults = function (cityName) {
 
 
 
-
 // Request weather results from the server
 var getWeatherResults = function (lat, lon, city) {
     // format the One Call API url (using the retrieved lattitude & longitude)
@@ -74,6 +78,9 @@ var getWeatherResults = function (lat, lon, city) {
                 response.json().then(function(data) {
                     
                     // select the weather info to display in the city-results div container 
+                    console.log(data);
+                    var icon = data.current.weather.icon;
+                    var iconImage = $("<img>").attr("src", "https://openweathermap.org/img/w/" + icon + ".png");
                     var temp = data.current.temp;
                     var wind = data.current.wind_speed;
                     var humidity = data.current.humidity;
@@ -82,7 +89,7 @@ var getWeatherResults = function (lat, lon, city) {
                     // create new weather info elements in the city-results div container
                     var currentInfoEl = document.createElement("h2");
                     currentInfoEl.classList = "flex-row justify-space-between font-weight-bold";
-                    currentInfoEl.textContent = city + " (" + currentDate + ")";
+                    currentInfoEl.textContent = city + " (" + currentDate + ")  " + iconImage;
                     cityResultsEl.appendChild(currentInfoEl);
 
                     var currentTempEl = document.createElement("p");
@@ -103,24 +110,55 @@ var getWeatherResults = function (lat, lon, city) {
                     var currentUviEl = document.createElement("p");
                     currentUviEl.classList = "flex-row justify-space-between font-weight-bold";
                     currentUviEl.textContent = "UV Index: " + uvi;
+                    cityResultsEl.appendChild(currentUviEl);
                     
                     // apply background colors to uvi value 
                     if ((parseInt(uvi)) <= 2) {
-                        $(uvi).addClass("bg-green");
+                        $(currentUviEl).addClass("bg-green");
                     }
                     else if (2 < (parseInt(uvi)) <= 5) {
-                        $(uvi).addClass("bg-yellow");
+                        $(currentUviEl).addClass("bg-yellow");
                     }
                     else if (5 < (parseInt(uvi)) <=7) {
-                        $(uvi).addClass("bg-orange");
+                        $(currentUviEl).addClass("bg-orange");
                     }
 
-                    cityResultsEl.appendChild(currentUviEl);
 
 
 
 
 
+
+                    // select the forecast info to display in the card div containers 
+                    console.log(data);
+
+                    var forecastDate = (moment().add([i]+1, 'days').format("M/D/YYYY"))._d;
+                    var forecastTemp = data.daily[i].temp.day;
+                    var forecastWind = data.daily[i].wind_speed;
+                    var forecastHumidity = data.daily[i].humidity;
+
+                    // create new weather info elements in the card div containers
+                    for (var i = 0; i < 5; i++) {
+                        var forecastDateEl = document.createElement("h3");
+                        forecastDateEl.classList = "flex-row justify-space-between font-weight-bold";
+                        forecastDateEl.textContent = forecastDate;
+                        forecastResultsEl.appendChild(forecastDateEl);
+
+                        var forecastTempEl = document.createElement("p");
+                        forecastTempEl.classList = "flex-row justify-space-between font-weight-bold";
+                        forecastTempEl.textContent = "Temp: " + forecastTemp + "°F";
+                        forecastResultsEl.appendChild(forecastTempEl);
+    
+                        var forecastWindEl = document.createElement("p");
+                        forecastWindEl.classList = "flex-row justify-space-between font-weight-bold";
+                        forecastWindEl.textContent = "Wind: " + forecastWind + " MPH";
+                        forecastResultsEl.appendChild(forecastWindEl);
+    
+                        var forecastHumidityEl = document.createElement("p");
+                        forecastHumidityEl.classList = "flex-row justify-space-between font-weight-bold";
+                        forecastHumidityEl.textContent = "Humidity: " + forecastHumidity + "%";
+                        forecastResultsEl.appendChild(forecastHumidityEl);
+                    }
                 })
             }
             else {
@@ -131,20 +169,6 @@ var getWeatherResults = function (lat, lon, city) {
             alert("Error: Unable to connect to One Call Weather");
         });
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
