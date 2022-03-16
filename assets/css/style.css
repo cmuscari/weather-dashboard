@@ -15,7 +15,10 @@
 }
 
 .card {
-  background-color: rgb(57, 52, 68)
+  background-color: rgb(57, 52, 68);
+  color: white;
+  margin: 1px;
+  display: inline-block;
 }
 
 

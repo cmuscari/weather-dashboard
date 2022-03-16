@@ -8,7 +8,6 @@ var forecastResultsEl = document.getElementsByClassName("card");
 
 
 
-
 // Form submit handler function to be executed on form submission
 var formSubmitHandler = function (event) {
     event.preventDefault();
@@ -78,9 +77,7 @@ var getWeatherResults = function (lat, lon, city) {
                 response.json().then(function(data) {
                     
                     // select the weather info to display in the city-results div container 
-                    console.log(data);
-                    var icon = data.current.weather.icon;
-                    var iconImage = $("<img>").attr("src", "https://openweathermap.org/img/w/" + icon + ".png");
+                    var icon = data.current.weather[0].icon;
                     var temp = data.current.temp;
                     var wind = data.current.wind_speed;
                     var humidity = data.current.humidity;
@@ -89,7 +86,7 @@ var getWeatherResults = function (lat, lon, city) {
                     // create new weather info elements in the city-results div container
                     var currentInfoEl = document.createElement("h2");
                     currentInfoEl.classList = "flex-row justify-space-between font-weight-bold";
-                    currentInfoEl.textContent = city + " (" + currentDate + ")  " + iconImage;
+                    currentInfoEl.innerHTML = city + "<span> (" + currentDate + ") </span>" + `<img src=http://openweathermap.org/img/w/${icon}.png />`;
                     cityResultsEl.appendChild(currentInfoEl);
 
                     var currentTempEl = document.createElement("p");
@@ -129,35 +126,35 @@ var getWeatherResults = function (lat, lon, city) {
 
 
 
-                    // select the forecast info to display in the card div containers 
-                    console.log(data);
-
-                    var forecastDate = (moment().add([i]+1, 'days').format("M/D/YYYY"))._d;
-                    var forecastTemp = data.daily[i].temp.day;
-                    var forecastWind = data.daily[i].wind_speed;
-                    var forecastHumidity = data.daily[i].humidity;
+                 
 
                     // create new weather info elements in the card div containers
-                    for (var i = 0; i < 5; i++) {
+                    for (var i = 1; i < 6; i++) {
+                        // select the forecast info to display in the card div containers 
+                        var forecastDate = moment.unix(data.daily[i].dt).format("MM/DD/YYYY");
+                        var forecastTemp = data.daily[i].temp.day;
+                        var forecastWind = data.daily[i].wind_speed;
+                        var forecastHumidity = data.daily[i].humidity;
+
                         var forecastDateEl = document.createElement("h3");
                         forecastDateEl.classList = "flex-row justify-space-between font-weight-bold";
                         forecastDateEl.textContent = forecastDate;
-                        forecastResultsEl.appendChild(forecastDateEl);
+                        forecastResultsEl[i-1].appendChild(forecastDateEl);
 
                         var forecastTempEl = document.createElement("p");
                         forecastTempEl.classList = "flex-row justify-space-between font-weight-bold";
                         forecastTempEl.textContent = "Temp: " + forecastTemp + "°F";
-                        forecastResultsEl.appendChild(forecastTempEl);
+                        forecastResultsEl[i-1].appendChild(forecastTempEl);
     
                         var forecastWindEl = document.createElement("p");
                         forecastWindEl.classList = "flex-row justify-space-between font-weight-bold";
                         forecastWindEl.textContent = "Wind: " + forecastWind + " MPH";
-                        forecastResultsEl.appendChild(forecastWindEl);
+                        forecastResultsEl[i-1].appendChild(forecastWindEl);
     
                         var forecastHumidityEl = document.createElement("p");
                         forecastHumidityEl.classList = "flex-row justify-space-between font-weight-bold";
                         forecastHumidityEl.textContent = "Humidity: " + forecastHumidity + "%";
-                        forecastResultsEl.appendChild(forecastHumidityEl);
+                        forecastResultsEl[i-1].appendChild(forecastHumidityEl);
                     }
                 })
             }
