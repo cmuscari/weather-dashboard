@@ -12,9 +12,8 @@ var forecastResultsEl = document.getElementsByClassName("card");
 var formSubmitHandler = function (event) {
     event.preventDefault();
 
-    // clear any existing city information from right side of screen
+    // clear any existing city information from current weather container
     cityResultsEl.textContent = "";
-    forecastResultsEl.textContent = "";
 
     // get value from input element
     var cityName = cityInputEl.value.trim();
@@ -120,26 +119,30 @@ var getWeatherResults = function (lat, lon, city) {
                         $(currentUviEl).addClass("bg-orange");
                     }
 
+                
 
-
-
-
-
-
-                 
 
                     // create new weather info elements in the card div containers
                     for (var i = 1; i < 6; i++) {
                         // select the forecast info to display in the card div containers 
                         var forecastDate = moment.unix(data.daily[i].dt).format("MM/DD/YYYY");
+                        var forecastIcon = data.daily[i].weather[0].icon;
                         var forecastTemp = data.daily[i].temp.day;
                         var forecastWind = data.daily[i].wind_speed;
                         var forecastHumidity = data.daily[i].humidity;
 
-                        var forecastDateEl = document.createElement("h3");
-                        forecastDateEl.classList = "flex-row justify-space-between font-weight-bold";
-                        forecastDateEl.textContent = forecastDate;
-                        forecastResultsEl[i-1].appendChild(forecastDateEl);
+                        // clear any existing city information from forecast container
+                        forecastResultsEl[i-1].textContent = "";
+
+                        var forecastInfoEl = document.createElement("h2");
+                        forecastInfoEl.classList = "flex-row justify-space-between font-weight-bold";
+                        forecastInfoEl.innerHTML = "<span> (" + forecastDate + ") </span>" + `<img src=http://openweathermap.org/img/w/${forecastIcon}.png />`;
+                        forecastResultsEl[i-1].appendChild(forecastInfoEl);
+
+                        // var forecastDateEl = document.createElement("h3");
+                        // forecastDateEl.classList = "flex-row justify-space-between font-weight-bold";
+                        // forecastDateEl.textContent = forecastDate;
+                        // forecastResultsEl[i-1].appendChild(forecastDateEl);
 
                         var forecastTempEl = document.createElement("p");
                         forecastTempEl.classList = "flex-row justify-space-between font-weight-bold";
