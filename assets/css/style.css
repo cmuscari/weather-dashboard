@@ -3,7 +3,7 @@
 }
 
 .bg-green {
-  background-color: rgb(50, 175, 38);
+  background-color: rgb(62, 202, 49);
 }
 
 .bg-yellow {
@@ -12,6 +12,14 @@
 
 .bg-orange {
   background-color: rgb(255, 145, 0);
+}
+
+.bg-red {
+  background-color: rgb(233, 49, 36);
+}
+
+.bg-purple {
+  background-color: rgb(199, 55, 243);
 }
 
 .card {

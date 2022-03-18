@@ -115,8 +115,14 @@ var getWeatherResults = function (lat, lon, city) {
                     else if (2 < (parseInt(uvi)) <= 5) {
                         $(currentUviEl).addClass("bg-yellow");
                     }
-                    else if (5 < (parseInt(uvi)) <=7) {
+                    else if (5 < (parseInt(uvi)) <= 7) {
                         $(currentUviEl).addClass("bg-orange");
+                    }
+                    else if (7 < (parseInt(uvi)) <= 10) {
+                        $(currentUviEl).addClass("bg-red");
+                    }
+                    else if ((parseInt(uvi)) > 10) {
+                        $(currentUviEl).addClass("bg-purple");
                     }
 
                 
@@ -124,6 +130,7 @@ var getWeatherResults = function (lat, lon, city) {
 
                     // create new weather info elements in the card div containers
                     for (var i = 1; i < 6; i++) {
+                        $(forecastResultsEl).removeClass("d-none");
                         // select the forecast info to display in the card div containers 
                         var forecastDate = moment.unix(data.daily[i].dt).format("MM/DD/YYYY");
                         var forecastIcon = data.daily[i].weather[0].icon;
