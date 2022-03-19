@@ -4,6 +4,8 @@ var cityInputEl = document.querySelector("#city-name");
 var cityResultsEl = document.querySelector("#city-results");
 var currentDate = (moment().format("M/D/YYYY"));
 var forecastResultsEl = document.getElementsByClassName("card");
+var searchHistoryEl = document.querySelector("#search-history");
+var ButtonsEl = [];
 
 
 
@@ -18,12 +20,28 @@ var formSubmitHandler = function (event) {
     // get value from input element
     var cityName = cityInputEl.value.trim();
 
-    // retrieve past searches
-    var retrievePastSearches = localStorage.getItem("past-searches") + ", " + cityName;
-    console.log(retrievePastSearches);
 
-    // save to local storage
-    localStorage.setItem("past-searches", retrievePastSearches);
+
+    
+    // save new search term to the buttons array
+    ButtonsEl.push(cityName);
+    console.log(ButtonsEl);
+
+    // save buttons array to local storage
+    localStorage.setItem("past-searches", ButtonsEl);
+
+    // retrieve buttons array from local storage & display
+    var getPastSearches = localStorage.getItem("past-searches");
+
+    for (var i = 0; i < getPastSearches.length; i++) {
+        var historyButton = document.createElement("button");
+        historyButton.textContent = getPastSearches[i];
+        searchHistoryEl.appendChild(historyButton);
+    }
+
+
+
+
 
     // if a value is entered, use it in the getCityResults function & clear the input.  If nothing was entered, show alert
     if (cityName) {
