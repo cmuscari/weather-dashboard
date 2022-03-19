@@ -18,6 +18,13 @@ var formSubmitHandler = function (event) {
     // get value from input element
     var cityName = cityInputEl.value.trim();
 
+    // retrieve past searches
+    var retrievePastSearches = localStorage.getItem("past-searches") + ", " + cityName;
+    console.log(retrievePastSearches);
+
+    // save to local storage
+    localStorage.setItem("past-searches", retrievePastSearches);
+
     // if a value is entered, use it in the getCityResults function & clear the input.  If nothing was entered, show alert
     if (cityName) {
         getCityResults(cityName);
