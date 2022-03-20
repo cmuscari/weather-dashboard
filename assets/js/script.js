@@ -52,7 +52,7 @@ var formSubmitHandler = function (event) {
 // Request the city results from the server
 var getCityResults = function (cityName) {
     // format the Geocoding API url
-    var geoUrl = "http://api.openweathermap.org/geo/1.0/direct?q=" + cityName + "&limit=5&appid=985c14e90aca4a530f8e1f738143f7b8";
+    var geoUrl = "https://api.openweathermap.org/geo/1.0/direct?q=" + cityName + "&limit=5&appid=985c14e90aca4a530f8e1f738143f7b8";
     // Make a request to the Geocoding API to get lattitude & longitude of city
     fetch(geoUrl)
         .then(function (response) {
@@ -99,7 +99,7 @@ var getWeatherResults = function (lat, lon, city) {
                     // create new weather info elements in the city-results div container
                     var currentInfoEl = document.createElement("h2");
                     currentInfoEl.classList = "flex-row justify-space-between font-weight-bold";
-                    currentInfoEl.innerHTML = city + "<span> (" + currentDate + ") </span>" + `<img src=http://openweathermap.org/img/w/${icon}.png />`;
+                    currentInfoEl.innerHTML = city + "<span> (" + currentDate + ") </span>" + `<img src=https://openweathermap.org/img/w/${icon}.png />`;
                     cityResultsEl.appendChild(currentInfoEl);
 
                     var currentTempEl = document.createElement("p");
