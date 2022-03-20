@@ -5,7 +5,8 @@ var cityResultsEl = document.querySelector("#city-results");
 var currentDate = (moment().format("M/D/YYYY"));
 var forecastResultsEl = document.getElementsByClassName("card");
 var searchHistoryEl = document.querySelector("#search-history");
-var ButtonsEl = [];
+var pastSearches = [];
+
 
 
 
@@ -20,30 +21,18 @@ var formSubmitHandler = function (event) {
     // get value from input element
     var cityName = cityInputEl.value.trim();
 
+    // add new search term to the array
+    pastSearches.push(cityName);
 
+    // create new search button for newest search
+    var newSearchButton = document.createElement("button");
+    newSearchButton.textContent = cityName;
+    searchHistoryEl.appendChild(newSearchButton);
 
-    
-    // save new search term to the buttons array
-    ButtonsEl.push(cityName);
-    console.log(ButtonsEl);
+    // change updated array back to a string & save to local storage
+    localStorage.setItem("searches", JSON.stringify(pastSearches));
 
-    // save buttons array to local storage
-    localStorage.setItem("past-searches", ButtonsEl);
-
-    // retrieve buttons array from local storage & display
-    var getPastSearches = localStorage.getItem("past-searches");
-
-    for (var i = 0; i < getPastSearches.length; i++) {
-        var historyButton = document.createElement("button");
-        historyButton.textContent = getPastSearches[i];
-        searchHistoryEl.appendChild(historyButton);
-    }
-
-
-
-
-
-    // if a value is entered, use it in the getCityResults function & clear the input.  If nothing was entered, show alert
+    // if a value was entered, use it in the getCityResults function & clear the input.  If nothing was entered, show alert
     if (cityName) {
         getCityResults(cityName);
         cityInputEl.value = "";
@@ -69,7 +58,7 @@ var getCityResults = function (cityName) {
         .then(function (response) {
             // request was successful
             if (response.ok) {
-                response.json().then(function(data) {
+                response.json().then(function (data) {
                     // select the lat & long data & send them into the getWeatherResults function
                     var lat = data[0].lat;
                     var lon = data[0].lon;
@@ -81,7 +70,7 @@ var getCityResults = function (cityName) {
                 alert("Error: City Not Found");
             }
         })
-        .catch(function(error) {
+        .catch(function (error) {
             alert("Error: Unable to connect to One Call Weather");
         });
 }
@@ -95,11 +84,11 @@ var getWeatherResults = function (lat, lon, city) {
     var weatherUrl = "https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&units=imperial&appid=985c14e90aca4a530f8e1f738143f7b8";
     // make a request to the One Call API to get weather results
     fetch(weatherUrl)
-        .then(function(response) {
+        .then(function (response) {
             // request was successful
             if (response.ok) {
-                response.json().then(function(data) {
-                    
+                response.json().then(function (data) {
+
                     // select the weather info to display in the city-results div container 
                     var icon = data.current.weather[0].icon;
                     var temp = data.current.temp;
@@ -132,7 +121,7 @@ var getWeatherResults = function (lat, lon, city) {
                     currentUviEl.classList = "flex-row justify-space-between font-weight-bold";
                     currentUviEl.textContent = "UV Index: " + uvi;
                     cityResultsEl.appendChild(currentUviEl);
-                    
+
                     // apply background colors to uvi value 
                     if ((parseInt(uvi)) <= 2) {
                         $(currentUviEl).addClass("bg-green");
@@ -150,7 +139,7 @@ var getWeatherResults = function (lat, lon, city) {
                         $(currentUviEl).addClass("bg-purple");
                     }
 
-                
+
 
 
                     // create new weather info elements in the card div containers
@@ -164,12 +153,12 @@ var getWeatherResults = function (lat, lon, city) {
                         var forecastHumidity = data.daily[i].humidity;
 
                         // clear any existing city information from forecast container
-                        forecastResultsEl[i-1].textContent = "";
+                        forecastResultsEl[i - 1].textContent = "";
 
                         var forecastInfoEl = document.createElement("h2");
                         forecastInfoEl.classList = "flex-row justify-space-between font-weight-bold";
                         forecastInfoEl.innerHTML = "<span> (" + forecastDate + ") </span>" + `<img src=http://openweathermap.org/img/w/${forecastIcon}.png />`;
-                        forecastResultsEl[i-1].appendChild(forecastInfoEl);
+                        forecastResultsEl[i - 1].appendChild(forecastInfoEl);
 
                         // var forecastDateEl = document.createElement("h3");
                         // forecastDateEl.classList = "flex-row justify-space-between font-weight-bold";
@@ -179,17 +168,17 @@ var getWeatherResults = function (lat, lon, city) {
                         var forecastTempEl = document.createElement("p");
                         forecastTempEl.classList = "flex-row justify-space-between font-weight-bold";
                         forecastTempEl.textContent = "Temp: " + forecastTemp + "°F";
-                        forecastResultsEl[i-1].appendChild(forecastTempEl);
-    
+                        forecastResultsEl[i - 1].appendChild(forecastTempEl);
+
                         var forecastWindEl = document.createElement("p");
                         forecastWindEl.classList = "flex-row justify-space-between font-weight-bold";
                         forecastWindEl.textContent = "Wind: " + forecastWind + " MPH";
-                        forecastResultsEl[i-1].appendChild(forecastWindEl);
-    
+                        forecastResultsEl[i - 1].appendChild(forecastWindEl);
+
                         var forecastHumidityEl = document.createElement("p");
                         forecastHumidityEl.classList = "flex-row justify-space-between font-weight-bold";
                         forecastHumidityEl.textContent = "Humidity: " + forecastHumidity + "%";
-                        forecastResultsEl[i-1].appendChild(forecastHumidityEl);
+                        forecastResultsEl[i - 1].appendChild(forecastHumidityEl);
                     }
                 })
             }
@@ -197,7 +186,7 @@ var getWeatherResults = function (lat, lon, city) {
                 alert("Error: City Not Found");
             }
         })
-        .catch(function(error) {
+        .catch(function (error) {
             alert("Error: Unable to connect to One Call Weather");
         });
 }
@@ -205,11 +194,41 @@ var getWeatherResults = function (lat, lon, city) {
 
 
 
+// get search history from local storage & load it on the page
+var loadSearchHistory = function () {
+    var historyList = localStorage.getItem("searches");
+    // if there are no searches in local storage, set searches to an empty array & return out of the function
+    if (!historyList) {
+        return false;
+    }
+    // otherwise, load up search history & parse into array of objects
+    pastSearches = JSON.parse(historyList);
+
+    // loop through pastSearches array 
+    for (var i = 0; i < pastSearches.length; i++) {
+        var historyButtonEl = document.createElement("button");
+        historyButtonEl.textContent = pastSearches[i];
+        historyButtonEl.className = "history-button";
+        searchHistoryEl.appendChild(historyButtonEl);
+    }
+}
 
 
 
 
 
+
+// load search history buttons upon loading webpage
+loadSearchHistory();
 
 // When search button is clicked, run the formSubmitHandler function
 searchButtonEl.addEventListener("click", formSubmitHandler);
+
+// // Search when history buttons are clicked
+// let historyButtons = document.getElementsByClassName("history-button");
+// let text = target.textContent;
+// historyButtons.addEventListener("click", getCityResults(text));
+
+
+
+
