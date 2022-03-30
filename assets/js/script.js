@@ -11,6 +11,7 @@ var pastSearches = [];
 
 
 
+
 // Form submit handler function to be executed on form submission
 var formSubmitHandler = function (event) {
     event.preventDefault();
@@ -21,26 +22,31 @@ var formSubmitHandler = function (event) {
     // get value from input element
     var cityName = cityInputEl.value.trim();
 
-    // add new search term to the array
-    pastSearches.push(cityName);
-
-    // create new search button for newest search
-    var newSearchButton = document.createElement("button");
-    newSearchButton.textContent = cityName;
-    searchHistoryEl.appendChild(newSearchButton);
-
-    // change updated array back to a string & save to local storage
-    localStorage.setItem("searches", JSON.stringify(pastSearches));
-
-    // if a value was entered, use it in the getCityResults function & clear the input.  If nothing was entered, show alert
-    if (cityName) {
-        getCityResults(cityName);
-        cityInputEl.value = "";
-        return (cityName);
-    }
-    else {
+    // if nothing is entered, show alert & return out of function 
+    if (!cityName) {
         alert("Please enter a city name");
+        return;
     }
+
+    // if new city name entered is not already in the pastSearches array, add it, create a button & add to local storage
+    if (pastSearches.includes(cityName) === false) {
+        // add new search term to the array
+        pastSearches.unshift(cityName);
+
+         // create new search button for newest search
+        var newSearchButton = document.createElement("button");
+        newSearchButton.textContent = cityName;
+        newSearchButton.classList = ("d-block p-1 m-2 align-middle btn-lg bg-secondary text-light rounded");
+        newSearchButton.addEventListener("click", function(e) {
+            getCityResults(e.target.textContent);
+        })
+        searchHistoryEl.appendChild(newSearchButton);
+
+        // change updated array back to a string & save to local storage
+        localStorage.setItem("searches", JSON.stringify(pastSearches));
+    }
+
+    getCityResults(cityName);
 };
 
 
@@ -59,6 +65,7 @@ var getCityResults = function (cityName) {
             // request was successful
             if (response.ok) {
                 response.json().then(function (data) {
+                    console.log(data);
                     // select the lat & long data & send them into the getWeatherResults function
                     var lat = data[0].lat;
                     var lon = data[0].lon;
@@ -88,6 +95,8 @@ var getWeatherResults = function (lat, lon, city) {
             // request was successful
             if (response.ok) {
                 response.json().then(function (data) {
+
+                    cityResultsEl.innerHTML = "";
 
                     // select the weather info to display in the city-results div container 
                     var icon = data.current.weather[0].icon;
@@ -155,15 +164,10 @@ var getWeatherResults = function (lat, lon, city) {
                         // clear any existing city information from forecast container
                         forecastResultsEl[i - 1].textContent = "";
 
-                        var forecastInfoEl = document.createElement("h2");
+                        var forecastInfoEl = document.createElement("h5");
                         forecastInfoEl.classList = "flex-row justify-space-between font-weight-bold";
                         forecastInfoEl.innerHTML = "<span> (" + forecastDate + ") </span>" + `<img src=http://openweathermap.org/img/w/${forecastIcon}.png />`;
                         forecastResultsEl[i - 1].appendChild(forecastInfoEl);
-
-                        // var forecastDateEl = document.createElement("h3");
-                        // forecastDateEl.classList = "flex-row justify-space-between font-weight-bold";
-                        // forecastDateEl.textContent = forecastDate;
-                        // forecastResultsEl[i-1].appendChild(forecastDateEl);
 
                         var forecastTempEl = document.createElement("p");
                         forecastTempEl.classList = "flex-row justify-space-between font-weight-bold";
@@ -208,7 +212,11 @@ var loadSearchHistory = function () {
     for (var i = 0; i < pastSearches.length; i++) {
         var historyButtonEl = document.createElement("button");
         historyButtonEl.textContent = pastSearches[i];
-        historyButtonEl.className = "history-button";
+        historyButtonEl.className = "d-block p-1 m-2 align-middle btn-lg bg-secondary text-light rounded history-button";
+        historyButtonEl.addEventListener("click", function(e) {
+            // e.preventDefault();
+            getCityResults(e.target.textContent);
+        })
         searchHistoryEl.appendChild(historyButtonEl);
     }
 }
@@ -224,10 +232,6 @@ loadSearchHistory();
 // When search button is clicked, run the formSubmitHandler function
 searchButtonEl.addEventListener("click", formSubmitHandler);
 
-// // Search when history buttons are clicked
-// let historyButtons = document.getElementsByClassName("history-button");
-// let text = target.textContent;
-// historyButtons.addEventListener("click", getCityResults(text));
 
 
 
